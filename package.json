@@ -1,0 +1,16 @@
+{
+  "name": "io.github.jango-fx.unityutilities",
+  "version": "0.0.1",
+  "displayName": "Unity Utilities",
+  "description": "a collection of personal utility and convenience scripts",
+  "unity": "2019.1",
+  "dependencies": {},
+  "keywords": [
+    "Utilities",
+    "Convenience"
+  ],
+  "author": {
+    "name": "Felix Groll",
+    "url": "https://github.com/jango-fx"
+  }
+}
