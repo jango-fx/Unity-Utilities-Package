@@ -34,16 +34,16 @@ public class SaveAndLoadComponents : MonoBehaviour
             switch (state)
             {
                 case PlayModeStateChange.ExitingPlayMode:
-                    Debug.Log("[EXIT PLAY]: " + gameObject.transform.position);
-                    SaveTransform();
+                    Debug.Log("[EXIT PLAY]");
+                    SaveAllComponents();
                     break;
                 case PlayModeStateChange.EnteredEditMode:                           // not working, since GO instance doesnt exist anymore
-                    Debug.Log("[ENTER EDIT]: " + gameObject.transform.position);
-                    LoadTransform();
+                    Debug.Log("[ENTER EDIT]");
+                    LoadAllComponents();
                     break;
                 case PlayModeStateChange.EnteredPlayMode:
-                    Debug.Log("[ENTER PLAY]: " + gameObject.transform.position);
-                    LoadTransform();
+                    Debug.Log("[ENTER PLAY]");
+                    LoadAllComponents();
                     break;
             }
     }
@@ -86,7 +86,7 @@ public class SaveAndLoadComponents : MonoBehaviour
             LoadAllComponents(go);
     }
 
-    void LoadAllComponents(GameObject go)
+    void LoadAllComponents(GameObject go)       // TODO: other way around, look in folder for presets and apply all, creating new components if necessary
     {
         foreach (Component c in go.GetComponents(typeof(Component)))
         {
