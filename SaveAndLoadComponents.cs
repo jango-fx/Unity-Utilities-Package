@@ -1,4 +1,6 @@
 ﻿#if UNITY_EDITOR
+using System.IO;
+using System.Collections;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,11 +14,14 @@ public class SaveAndLoadComponents : MonoBehaviour
     public string presetFolder = "tmpPresets";
     public bool autoSaveLoad = true;
     [Space(10)]
-    [ContextMenuItem("Load the Preset", "LoadThePreset")]
-    public Preset thePreset;
-    void LoadThePreset() { LoadPreset(thePreset); }
+    [ContextMenuItem("load preset", "LoadThePreset")]
+    [ContextMenuItem("reset", "ClearThePreset")]
+    public Preset preset;
+    void LoadThePreset() { LoadPreset(preset, this.gameObject); }
+    void ClearThePreset() {preset = null; }
+    [Space(10)]
+    public GameObject[] others;
 
-    // register an event handler when the class is initialized
     void Start()
     {
         EditorApplication.playModeStateChanged += LogPlayModeState;
@@ -48,7 +53,7 @@ public class SaveAndLoadComponents : MonoBehaviour
 
     [ContextMenu("Load Transform")]
     void LoadTransform()
-    { if (thePreset != null) ApplyPresetAsset(thePreset, this.gameObject.transform); }
+    { if (preset != null) ApplyPresetAsset(preset, this.gameObject.transform); }
 
     [ContextMenu("Save Transform")]
     void SaveTransform()
@@ -58,54 +63,64 @@ public class SaveAndLoadComponents : MonoBehaviour
     [ContextMenu("Save All Components")]
     void SaveAllComponents()
     {
-        foreach (Component c in gameObject.GetComponents(typeof(Component)))
+        SaveAllComponents(this.gameObject);
+        foreach(GameObject go in others)
+            SaveAllComponents(go);
+    }
+
+    void SaveAllComponents(GameObject go)
+    {
+        foreach (Component c in go.GetComponents(typeof(Component)))
         {
             if (c.GetType() != this.GetType())
-                CreatePresetAsset(c, CreatFileName(c));
+                CreatePresetAsset(c, CreateFileName(c, go));
         }
     }
+
 
     [ContextMenu("Load All Components")]
     void LoadAllComponents()
     {
-        foreach (Component c in gameObject.GetComponents(typeof(Component)))
+        LoadAllComponents(this.gameObject);
+        foreach(GameObject go in others)
+            LoadAllComponents(go);
+    }
+
+    void LoadAllComponents(GameObject go)
+    {
+        foreach (Component c in go.GetComponents(typeof(Component)))
         {
             if (c.GetType() != this.GetType())
             {
+                string path = CreateFileName(c, go);
 
-                string path = CreatFileName(c);
                 Preset preset = AssetDatabase.LoadAssetAtPath<Preset>(path);
-                LoadPreset(preset);
+                ApplyPresetAsset(preset, c);
             }
         }
     }
 
-    void LoadPreset(Preset preset)
+    void LoadPreset(Preset preset, GameObject go)
     {
-        Debug.Log(preset);
         if (preset != null)
         {
             System.Type type = System.Type.GetType(preset.GetTargetFullTypeName() + ", UnityEngine");
             if (type != null)
             {
-                var component = this.gameObject.GetComponent(type);
+                var component = go.GetComponent(type);
                 ApplyPresetAsset(preset, component);
             }
         }
     }
 
-    string CreatFileName(Component c)
+    string CreateFileName(Component c, GameObject go)
     {
-        return "Assets/" + presetFolder + "/" + this.gameObject.name + "/" + c.GetType().Name + ".preset";
-    }
-    string CreatFileName(Preset p)
-    {
-        return "Assets/" + presetFolder + "/" + this.gameObject.name + "/" + p.GetTargetTypeName() + ".preset";
+        return "Assets/" + presetFolder + "/" + go.name+go.GetInstanceID() + "/" + c.GetType().Name + ".preset";
     }
 
-    string CreateFolderPath()
+    string CreateFolderPath(GameObject go)
     {
-        return "Assets/" + presetFolder + "/" + this.gameObject.name + "/";
+        return "Assets/" + presetFolder + "/" + go.name+go.GetInstanceID() + "/";
     }
 
     public bool CopyObjectSerialization(Object source, Object target)
@@ -121,12 +136,13 @@ public class SaveAndLoadComponents : MonoBehaviour
     }
 
     // This method creates a Preset from a given Object and save it as an asset in the project.
-    public void CreatePresetAsset(Object source, string name)
+    public void CreatePresetAsset(Object source, string filePath)
     {
         Preset preset = new Preset(source);
-        if (!System.IO.Directory.Exists(CreateFolderPath()))
-        { System.IO.Directory.CreateDirectory(CreateFolderPath()); }
-        AssetDatabase.CreateAsset(preset, CreatFileName(preset));
+        if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+        
+        AssetDatabase.CreateAsset(preset, filePath);
     }
 }
 #endif
