@@ -10,7 +10,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace UnityUtils
+namespace ƒx.UnityUtils
 {
 
     public class Transitions

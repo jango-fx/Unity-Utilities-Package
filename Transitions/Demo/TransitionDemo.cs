@@ -1,4 +1,5 @@
 using UnityEngine;
+using ƒx.UnityUtils;
 
 public class TransitionDemo : MonoBehaviour
 {
@@ -18,9 +19,9 @@ public class TransitionDemo : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(UnityUtils.Transitions.LerpFloat(  () => number, (x) => number = x, toNumber, transitionDuration)  );
-        StartCoroutine(UnityUtils.Transitions.LerpVector3(  () => vector, (x) => vector = x, toVector, transitionDuration)  );
-        StartCoroutine(UnityUtils.Transitions.LerpColor(  () => color, (x) => color = x, toColor, transitionDuration)  );
+        StartCoroutine(Transitions.LerpFloat(  () => number, (x) => number = x, toNumber, transitionDuration)  );
+        StartCoroutine(Transitions.LerpVector3(  () => vector, (x) => vector = x, toVector, transitionDuration)  );
+        StartCoroutine(Transitions.LerpColor(  () => color, (x) => color = x, toColor, transitionDuration)  );
     }
 
 }
