@@ -17,10 +17,10 @@ public class SaveAndLoadComponents : MonoBehaviour
     [ContextMenuItem("load preset", "LoadThePreset")]
     [ContextMenuItem("reset", "ClearThePreset")]
     public Preset preset;
-    void LoadThePreset() { LoadPreset(preset, this.gameObject); }
-    void ClearThePreset() {preset = null; }
+    void LoadThePreset() {  LoadPreset(preset, this.gameObject);  }
+    void ClearThePreset() {  preset = null;  }
     [Space(10)]
-    public GameObject[] others;
+    public GameObject[] additionalTrackedObjects;
 
     void Start()
     {
@@ -64,7 +64,7 @@ public class SaveAndLoadComponents : MonoBehaviour
     void SaveAllComponents()
     {
         SaveAllComponents(this.gameObject);
-        foreach(GameObject go in others)
+        foreach(GameObject go in additionalTrackedObjects)
             SaveAllComponents(go);
     }
 
@@ -82,7 +82,7 @@ public class SaveAndLoadComponents : MonoBehaviour
     void LoadAllComponents()
     {
         LoadAllComponents(this.gameObject);
-        foreach(GameObject go in others)
+        foreach(GameObject go in additionalTrackedObjects)
             LoadAllComponents(go);
     }
 
