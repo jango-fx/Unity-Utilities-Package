@@ -1,10 +1,9 @@
 {
   "name": "io.github.jango-fx.unityutils",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "displayName": "Unity Utilities Core Package",
   "description": "a collection of personal utility and convenience scripts",
   "unity": "2019.1",
-  "dependencies": {},
   "keywords": [
     "Utilities",
     "Convenience"
