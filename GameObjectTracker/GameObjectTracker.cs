@@ -37,6 +37,11 @@ public class GameObjectTracker : MonoBehaviour
         SaveState();
     }
 
+    void OnEnable()
+    {
+        SaveState();
+    }
+
 /*
     void OnDrawGizmos()
     {
