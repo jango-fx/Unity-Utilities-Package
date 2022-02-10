@@ -72,15 +72,8 @@ public class GameObjectTracker : MonoBehaviour
                 UpdatePosition(trackedObject.transform.position + diffPosition);
             }
 
+            UpdateRotation();
 
-            if (absoluteRotation)
-            {
-                UpdateRotation(trackedObject.transform.rotation);
-            }
-            else
-            {
-                UpdateRotation(diffRotation * trackedObject.transform.rotation);
-            }
         } else Debug.Log("[GameObjectTracker]: no object reference!");
     }
 
@@ -93,30 +86,46 @@ public class GameObjectTracker : MonoBehaviour
         transform.position = pNew;
     }
 
-    void UpdateRotation(Quaternion qIn)
+    void UpdateRotation()
     {
-        // transform.rotation = diffRotation * trackedObject.transform.rotation;
-        Vector3 eulerNew = trackedObject.transform.rotation.eulerAngles;
-        if(constrains.noRotationX) eulerNew.x = 0;
-        if(constrains.noRotationY) eulerNew.y = 0;
-        if(constrains.noRotationZ) eulerNew.z = 0;
-        Quaternion qNew = Quaternion.Euler(eulerNew);
-        transform.rotation = diffRotation * qNew;
-        
+        if(absoluteRotation){
+            transform.rotation = trackedObject.transform.rotation;
+        }
+        else{
+
+            Transform tmpParent = this.transform.parent;
+            this.transform.SetParent(trackedObject.transform);
+            this.transform.localRotation = diffRotation;
+            Quaternion rotTmp = this.transform.rotation;
+            this.transform.SetParent(tmpParent);
+            transform.rotation = rotTmp;
+        }
+
+        Vector3 eulerConstrained = this.transform.eulerAngles;
+        if(constrains.noRotationX) eulerConstrained.x = 0;
+        if(constrains.noRotationY) eulerConstrained.y = 0;
+        if(constrains.noRotationZ) eulerConstrained.z = 0;
+        this.transform.eulerAngles = eulerConstrained;   
     }
 
     [ContextMenu("Save Current State")]
     void SaveState()
     {
         // https://forum.unity.com/threads/get-the-difference-between-two-quaternions-and-add-it-to-another-quaternion.513187/
+
         thisRotation = this.transform.rotation;
         thisPosition = this.transform.position;
 
         thatPosition = trackedObject.transform.position;
         thatRotation = trackedObject.transform.rotation;
 
+
         diffPosition = thisPosition - thatPosition;
-        diffRotation = thisRotation * Quaternion.Inverse(thatRotation);
+        Transform tmpParent = this.transform.parent;
+        this.transform.SetParent(trackedObject.transform);
+        diffRotation = this.transform.localRotation;
+        this.transform.SetParent(tmpParent);
+
         Debug.Log("[GameObjectTracker]: saved current state.");
     }
 }
